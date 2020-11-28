@@ -28,9 +28,17 @@ docker run -it --rm \
   -d dockerfile `Dockerfile if it's not the standard name. Relative to /opt/working-dir`
 ```
 
+#### Development
+
+##### Debugging
+* Output what the shell is streaming for replaying:
+```
+./dockerfile-builder [options] | tee debug.txt
+```
+
 #### TODO
 
 Bugs (shell mode):
 * Multiline command support
 * Command with `&&` support
-* Terminal sizing/resizing
+* Terminal resizing

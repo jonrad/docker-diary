@@ -19,7 +19,7 @@ export class ModeShell {
   }
 
   run(image: string) {
-    const size = process.stdout.getWindowSize();
+    const size = (process.stdout.getWindowSize && process.stdout.getWindowSize()) || [undefined, undefined];
 
     const child = pty.spawn(
       'docker',
