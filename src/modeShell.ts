@@ -27,8 +27,9 @@ export class ModeShell {
         'run',
         '-it',
         '--rm',
-        image,
+        '--entrypoint',
         'bash',
+        image,
         '-c',
         fs.readFileSync(resources.promptCommand).toString() +
           '\n' +
