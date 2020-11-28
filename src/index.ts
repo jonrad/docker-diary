@@ -2,21 +2,12 @@ import fs = require('fs');
 import {exit} from 'process';
 import uuid = require('uuid');
 import child_process = require('child_process');
-import {AppendingDockerfileWriter} from './dockerfileWriter';
+import {AppendingDockerfileWriter, NullDockerfileWriter, DockerfileWriter} from './dockerfileWriter';
 import {FileCommandFilter, NullCommandFilter, CommandFilter} from './filter';
 import {ModeShell} from './modeShell';
 
 const yargs = require('yargs/yargs')(process.argv.slice(2))
   .usage('Usage: $0 [options] [image]')
-  //debug
-  .boolean('debug')
-  .alias('d', 'debug')
-  .describe('d', 'Print container stdio to debug.txt')
-  //debug
-  .boolean('stdio')
-  .alias('i', 'input')
-  .alias('i', 'stdio')
-  .describe('i', 'Read from stdio instead of launching docker')
   //help
   .help('h')
   .alias('h', 'help')
@@ -31,12 +22,19 @@ const yargs = require('yargs/yargs')(process.argv.slice(2))
   .alias('m', 'mode')
   .describe('mode', '[shell|docker|stdio] - note only shell currently works')
   .choices('mode', ['shell', 'docker', 'stdio', 'testing'])
+  //dry run
+  .boolean('d')
+  .alias('d', 'dry')
+  .describe("dry run. Don't save to dockerfile")
   //the year of the devil
   .epilog('copyright 2020');
 
 const argv = yargs.argv;
 const dockerfile = yargs.dockerfile || 'Dockerfile';
-const dockerfileWriter = new AppendingDockerfileWriter(dockerfile);
+const dockerfileWriter: DockerfileWriter = argv.dry
+  ? new NullDockerfileWriter()
+  : new AppendingDockerfileWriter(dockerfile);
+
 const mode = argv.mode || 'shell';
 
 function debug(text: string) {

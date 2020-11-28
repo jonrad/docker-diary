@@ -1,8 +1,16 @@
+/* eslint-disable no-control-regex */
 import {CommandFilter} from './filter';
 import {DockerfileWriter} from './dockerfileWriter';
 
 export class LineProcessor {
-  private readonly regexp = /^DOCKERFILE_BUILDER!([^!]*)!(.*)!DOCKERFILE_BUILDER/; //todo end line
+  private readonly text = 'DOCKERFILE_BUILDER'
+    .split('')
+    .map(s => s + '\b')
+    .join('');
+
+  private readonly regexp = new RegExp(
+    `${this.text}!\b([^!]*)!\b(.*)!\b${this.text}`
+  ); //todo end line, start line
 
   constructor(private readonly commandProcessor: CommandProcessor) {}
 
@@ -10,7 +18,10 @@ export class LineProcessor {
     const matches = line.match(this.regexp);
     if (!matches) return false;
     const [, command, arg] = matches;
-    await this.commandProcessor.process(command, arg);
+    await this.commandProcessor.process(
+      command.replace(/\x08/g, ''),
+      arg.replace(/\x08/g, '')
+    );
     return true;
   }
 }
@@ -27,17 +38,19 @@ export class DockerwriteCommandProcessor implements CommandProcessor {
 
   async process(command: string, arg: string): Promise<void> {
     if (command === 'RUN') {
-      if (!this.commandFilter.shouldSkip(arg)) {
-        if (arg) {
-          //TODO fix me hack for live version
-          if (arg.startsWith('cd ')) {
-            this.dockerfileWriter.write(`WORKDIR "${arg.substr(3)}"\n`);
-          } else {
-            const statement = `RUN ${arg}\n`;
+      if (this.commandFilter.shouldSkip(arg)) {
+        return;
+      }
 
-            this.dockerfileWriter.write(statement);
-            //await this.onFileWrite(statement);
-          }
+      if (arg) {
+        //TODO fix me hack for live version
+        if (arg.startsWith('cd ')) {
+          this.dockerfileWriter.write(`WORKDIR "${arg.substr(3)}"\n`);
+        } else {
+          const statement = `RUN ${arg}\n`;
+
+          this.dockerfileWriter.write(statement);
+          //await this.onFileWrite(statement);
         }
       }
     } else if (command === 'WORKDIR') {
