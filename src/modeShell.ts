@@ -4,6 +4,9 @@ import resources from './resources';
 import {DockerfileWriter} from './dockerfileWriter';
 import {CommandFilter} from './filter';
 import {LineProcessor, DockerwriteCommandProcessor} from './lineProcessor';
+import {WriteStream} from 'tty';
+import pty = require('node-pty');
+import { exit } from 'process';
 
 export class ModeShell {
   private readonly lineProcessor: LineProcessor;
@@ -18,7 +21,9 @@ export class ModeShell {
   }
 
   run(image: string) {
-    const child = child_process.spawn(
+    const size = process.stdout.getWindowSize();
+
+    const child = pty.spawn(
       'docker',
       [
         'run',
@@ -31,12 +36,29 @@ export class ModeShell {
           '\n' +
           'PROMPT_COMMAND="promptCommand" bash',
       ],
-      {stdio: [process.stdin, 'pipe', process.stderr]}
+      {
+        cols: size[0],
+        rows: size[1],
+        env: process.env as {[key: string]: string},
+      }
     );
 
-    child.stdout.on('data', (d: string | Uint8Array) => {
+    child.on('data', (d: string | Uint8Array) => {
       process.stdout.write(d);
-      this.lineProcessor.process(d.toString());
     });
+
+    const isRaw = process.stdin.isRaw;
+    process.stdin.setRawMode(true);
+
+    process.stdin.on('data', (d: string | Uint8Array) => {
+      child.write(d.toString());
+    });
+
+    child.onExit(() => {
+      process.stdin.setRawMode(isRaw);
+      exit(0);
+    });
+
+    //TODO handle resizing of term
   }
 }
