@@ -47,6 +47,14 @@ export class ModeShell {
       process.stdout.write(d);
     });
 
+    process.stdout.on('resize', () => {
+      const columns = process.stdout.columns;
+      const rows = process.stdout.rows;
+      if (rows && columns) {
+        child.resize(process.stdout.columns, process.stdout.rows);
+      }
+    });
+
     const isRaw = process.stdin.isRaw;
     process.stdin.setRawMode(true);
 
