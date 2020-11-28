@@ -27,17 +27,19 @@ export class DockerwriteCommandProcessor implements CommandProcessor {
 
   async process(command: string, arg: string): Promise<void> {
     if (command === 'RUN') {
-      if (!this.commandFilter.shouldSkip(arg)) {
-        if (arg) {
-          //TODO fix me hack for live version
-          if (arg.startsWith('cd ')) {
-            this.dockerfileWriter.write(`WORKDIR "${arg.substr(3)}"\n`);
-          } else {
-            const statement = `RUN ${arg}\n`;
+      if (this.commandFilter.shouldSkip(arg)) {
+        return;
+      }
 
-            this.dockerfileWriter.write(statement);
-            //await this.onFileWrite(statement);
-          }
+      if (arg) {
+        //TODO fix me hack for live version
+        if (arg.startsWith('cd ')) {
+          this.dockerfileWriter.write(`WORKDIR "${arg.substr(3)}"\n`);
+        } else {
+          const statement = `RUN ${arg}\n`;
+
+          this.dockerfileWriter.write(statement);
+          //await this.onFileWrite(statement);
         }
       }
     } else if (command === 'WORKDIR') {
