@@ -24,7 +24,7 @@ dockerfile-builder
 #### Options
 
 ```
-dockerfile-builder
+dockerfile-builder \
   ubuntu `The base image to use. Required if no Dockerfile exists in the working dir` \
   --filter filter.txt `Optional file with commands to not store in the Dockerfile, using regex. Eg a file with the contents ^ls would filter out all lines starting with ls commands` \
   --dockerfile dockerfile `Dockerfile if it's not the standard name. Relative to /opt/working-dir` \
