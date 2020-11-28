@@ -2,7 +2,7 @@ import {CommandFilter} from './filter';
 import {DockerfileWriter} from './dockerfileWriter';
 
 export class LineProcessor {
-  private readonly regexp = /^DOCKERFILE_BUILDER!([^!]*)!(.*)!DOCKERFILE_BUILDER/; //todo end line
+  private readonly regexp = /DOCKERFILE_BUILDER!([^!]*)!(.*)!DOCKERFILE_BUILDER/; //todo end line, start line
 
   constructor(private readonly commandProcessor: CommandProcessor) {}
 

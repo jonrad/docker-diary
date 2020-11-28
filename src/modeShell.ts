@@ -3,7 +3,6 @@ import resources from './resources';
 import {DockerfileWriter} from './dockerfileWriter';
 import {CommandFilter} from './filter';
 import {LineProcessor, DockerwriteCommandProcessor} from './lineProcessor';
-import {WriteStream} from 'tty';
 import pty = require('node-pty');
 import {exit} from 'process';
 
@@ -43,6 +42,7 @@ export class ModeShell {
     );
 
     child.on('data', (d: string | Uint8Array) => {
+      this.lineProcessor.process(d.toString());
       process.stdout.write(d);
     });
 
@@ -50,9 +50,7 @@ export class ModeShell {
     process.stdin.setRawMode(true);
 
     process.stdin.on('data', (d: string | Uint8Array) => {
-      const data = d.toString();
-      child.write(data);
-      this.lineProcessor.process(data);
+      child.write(d.toString());
     });
 
     child.onExit(() => {
