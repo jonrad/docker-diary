@@ -5,7 +5,7 @@ Build Dockerfiles interactively, using your shell
 
 #### Setup ####
 ```
-# To make live easier
+# To make life easier
 alias dockerfile-builder="docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock -v \$PWD:/opt/working-dir jonrad/dockerfile-builder"
 ```
 #### New Project No Dockerfile
