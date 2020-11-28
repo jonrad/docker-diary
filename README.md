@@ -36,9 +36,3 @@ docker run -it --rm \
 ./dockerfile-builder [options] | tee debug.txt
 ```
 
-#### TODO
-
-Bugs (shell mode):
-* Multiline command support
-* Command with `&&` support
-* Terminal resizing

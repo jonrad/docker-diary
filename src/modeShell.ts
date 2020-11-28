@@ -18,10 +18,13 @@ export class ModeShell {
     );
   }
 
-  run(image: string) {
-    const size = (process.stdout.getWindowSize && process.stdout.getWindowSize()) || [undefined, undefined];
+  private buildPty(image: string) {
+    const [columns, rows] = [
+      process.stdout.columns || undefined,
+      process.stdout.rows || undefined,
+    ];
 
-    const child = pty.spawn(
+    return pty.spawn(
       'docker',
       [
         'run',
@@ -36,11 +39,15 @@ export class ModeShell {
           'PROMPT_COMMAND="promptCommand" bash',
       ],
       {
-        cols: size[0],
-        rows: size[1],
+        cols: columns,
+        rows: rows,
         env: process.env as {[key: string]: string},
       }
     );
+  }
+
+  run(image: string) {
+    const child = this.buildPty(image);
 
     child.on('data', (d: string | Uint8Array) => {
       this.lineProcessor.process(d.toString());
@@ -66,7 +73,5 @@ export class ModeShell {
       process.stdin.setRawMode(isRaw);
       exit(0);
     });
-
-    //TODO handle resizing of term
   }
 }
