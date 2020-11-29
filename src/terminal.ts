@@ -1,5 +1,5 @@
 import pty = require('node-pty');
-import { exit } from 'process';
+import {exit} from 'process';
 
 class DisposableWrapper implements pty.IDisposable {
   constructor(private readonly onDispose: () => void) {}
@@ -9,7 +9,7 @@ class DisposableWrapper implements pty.IDisposable {
   }
 }
 
-export class terminal {
+export class Terminal {
   private columns: number | undefined;
   private rows: number | undefined;
   private current: pty.IPty | undefined;
@@ -17,7 +17,10 @@ export class terminal {
 
   private disposables: pty.IDisposable[] = [];
 
-  constructor(private readonly onData: (data: string) => void) {
+  constructor(
+    private readonly onData: (data: string) => void,
+    private readonly onExit: () => void
+  ) {
     this.setDimensions();
 
     process.stdout.on('resize', () => {
@@ -54,7 +57,7 @@ export class terminal {
     this.disposables.push(
       this.current.onExit(() => {
         process.stdin.setRawMode(this.previousRawMode);
-        exit(0);
+        this.onExit();
       })
     );
 

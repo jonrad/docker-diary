@@ -3,11 +3,12 @@ import resources from './resources';
 import {DockerfileWriter} from './dockerfileWriter';
 import {CommandFilter} from './filter';
 import {LineProcessor, DockerwriteCommandProcessor} from './lineProcessor';
-import {terminal} from './terminal';
+import {Terminal} from './terminal';
+import {exit} from 'process';
 
 export class ModeShell {
   private readonly lineProcessor: LineProcessor;
-  private readonly terminal: terminal;
+  private readonly terminal: Terminal;
 
   constructor(
     private readonly dockerfileWriter: DockerfileWriter,
@@ -17,10 +18,13 @@ export class ModeShell {
       new DockerwriteCommandProcessor(dockerfileWriter, filter)
     );
 
-    this.terminal = new terminal((d: string) => {
-      this.lineProcessor.process(d.toString());
-      process.stdout.write(d);
-    });
+    this.terminal = new Terminal(
+      (d: string) => {
+        this.lineProcessor.process(d.toString());
+        process.stdout.write(d);
+      },
+      () => exit(0)
+    );
   }
 
   run(image: string) {
