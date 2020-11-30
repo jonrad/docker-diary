@@ -25,31 +25,27 @@ class DockerModeCommandProcessor implements CommandProcessor {
 
       if (arg) {
         //TODO fix me hack for live version
-        if (arg.startsWith('cd ')) {
-          const statement = `WORKDIR "${arg.substr(3)}"\n`;
-          this.dockerfileWriter.write(statement);
-          const dockerfileContents = `FROM ${this.image}\n${statement}`;
-          const newImage = await this.runBuild(dockerfileContents);
-          if (newImage) {
-            this.image = newImage;
-            this.onNewImage(this.image);
-          }
-        } else {
-          const statement = `RUN ${arg}\n`;
+        const statement = `RUN ${arg}\n`;
 
-          this.dockerfileWriter.write(statement);
+        this.dockerfileWriter.write(statement);
 
-          const dockerfileContents = `FROM ${this.image}\n${statement}`;
-          const newImage = await this.runBuild(dockerfileContents);
-          if (newImage) {
-            this.image = newImage;
-            this.onNewImage(this.image);
-          }
-          //await this.onFileWrite(statement);
+        const dockerfileContents = `FROM ${this.image}\n${statement}`;
+        const newImage = await this.runBuild(dockerfileContents);
+        if (newImage) {
+          this.image = newImage;
+          this.onNewImage(this.image);
         }
+        //await this.onFileWrite(statement);
       }
     } else if (command === 'WORKDIR') {
-      this.dockerfileWriter.write(`WORKDIR ${arg}\n`);
+      const statement = `WORKDIR ${arg}\n`;
+      this.dockerfileWriter.write(statement);
+      const dockerfileContents = `FROM ${this.image}\n${statement}`;
+      const newImage = await this.runBuild(dockerfileContents);
+      if (newImage) {
+        this.image = newImage;
+        this.onNewImage(this.image);
+      }
     } else if (command === 'EXACT') {
       this.dockerfileWriter.write(`${arg}\n`);
     }

@@ -22,3 +22,6 @@ COPY ./build/src/ /usr/src/docker-builder/
 # Start 'er up
 WORKDIR "/opt/working-dir"
 ENTRYPOINT ["node", "/usr/src/docker-builder/index.js"]
+WORKDIR /opt
+RUN pwd
+RUN echo hello1
