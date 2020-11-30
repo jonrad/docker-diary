@@ -5,6 +5,7 @@ import child_process = require('child_process');
 import {AppendingDockerfileWriter, NullDockerfileWriter, DockerfileWriter} from './dockerfileWriter';
 import {FileCommandFilter, NullCommandFilter, CommandFilter} from './filter';
 import {ModeShell} from './modeShell';
+import { ModeDocker } from './modeDocker';
 
 const yargs = require('yargs/yargs')(process.argv.slice(2))
   .usage('Usage: $0 [options] [image]')
@@ -90,8 +91,9 @@ if (argv.stdio) {
   if (mode === 'shell') {
     const app = new ModeShell(dockerfileWriter, filter);
     app.run(image);
-  } else {
-    //todo
+  } else if (mode === 'docker') {
+    const app = new ModeDocker(dockerfileWriter, filter);
+    app.run(image);
   }
 } else {
   console.log('testing testing 1 2 1 2');

@@ -15,10 +15,12 @@ export class Terminal {
   private current: pty.IPty | undefined;
   private readonly previousRawMode: boolean;
 
+  private buffer: string[] = [];
+
   private disposables: pty.IDisposable[] = [];
 
   constructor(
-    private readonly onData: (data: string) => void,
+    private readonly onData: (data: string) => Promise<void>,
     private readonly onExit: () => void
   ) {
     this.setDimensions();
@@ -48,9 +50,24 @@ export class Terminal {
       env: process.env as {[key: string]: string},
     });
 
+    let waiting = false;
     this.disposables.push(
-      this.current.onData((d: string | Uint8Array) => {
-        this.onData(d.toString());
+      this.current.onData(async (d: string | Uint8Array) => {
+        if (waiting) {
+          this.buffer.push(d.toString());
+          return;
+        }
+
+        try {
+          waiting = true;
+          await this.onData(d.toString());
+          while (this.buffer.length > 0) {
+            const next = this.buffer.unshift();
+            await this.onData(next.toString());
+          }
+        } finally {
+          waiting = false;
+        }
       })
     );
 
@@ -75,5 +92,6 @@ export class Terminal {
   stop() {
     this.disposables.forEach(d => d.dispose());
     this.disposables = [];
+    this.buffer = [];
   }
 }

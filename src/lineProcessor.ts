@@ -30,7 +30,7 @@ export interface CommandProcessor {
   process(command: string, arg: string): Promise<void>;
 }
 
-export class DockerwriteCommandProcessor implements CommandProcessor {
+export class ShellModeCommandProcessor implements CommandProcessor {
   constructor(
     private readonly dockerfileWriter: DockerfileWriter,
     private readonly commandFilter: CommandFilter
@@ -44,14 +44,10 @@ export class DockerwriteCommandProcessor implements CommandProcessor {
 
       if (arg) {
         //TODO fix me hack for live version
-        if (arg.startsWith('cd ')) {
-          this.dockerfileWriter.write(`WORKDIR "${arg.substr(3)}"\n`);
-        } else {
-          const statement = `RUN ${arg}\n`;
+        const statement = `RUN ${arg}\n`;
 
-          this.dockerfileWriter.write(statement);
-          //await this.onFileWrite(statement);
-        }
+        this.dockerfileWriter.write(statement);
+        //await this.onFileWrite(statement);
       }
     } else if (command === 'WORKDIR') {
       this.dockerfileWriter.write(`WORKDIR ${arg}\n`);

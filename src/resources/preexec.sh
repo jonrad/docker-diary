@@ -7,7 +7,8 @@ function init() {
       local this_command=`HISTTIMEFORMAT= history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//"`;
 
       # So that you don't get locked accidentally
-      echo "LASTCOMMAND<$this_command>LASTCOMMAND"
+      output="DOCKERFILE_BUILDER!RUN!$this_command!DOCKERFILE_BUILDER"
+      echo $output | grep -o . | awk '{printf("%s\b", $0)}'
       if [ "shopt -u extdebug" == "$this_command" ]; then
           return 0
       fi
