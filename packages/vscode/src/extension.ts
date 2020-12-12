@@ -123,7 +123,14 @@ export function activate(context: vscode.ExtensionContext) {
 
   };
 
-  context.subscriptions.push(vscode.commands.registerCommand('dockerfile-builder.runForWorkspace', async () => {
+  // If in an active dockerfile, use that
+  // otherwise, if there exists exactly on dockerfile in the directory, use that
+  // otherwise, just use "Dockerfile"
+  const getDockerfile = async () => {
+    if (vscode.window.activeTextEditor.document.fileName?.match(/Dockerfile$/)) {
+      return vscode.window.activeTextEditor.document.fileName;
+    }
+
     const directory = vscode.workspace.rootPath;
 
     if (!directory) {
@@ -131,17 +138,23 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
-    const dockerfile = await (async () => {
-      const dockerfilesInRoot = (await vscode.workspace.findFiles("*Dockerfile"))
-        .map(f => f.fsPath)
-        .filter(f => path.extname(f) === "Dockerfile" || path.basename(f) === "Dockerfile");
+    const dockerfilesInRoot = (await vscode.workspace.findFiles("*Dockerfile"))
+      .map(f => f.fsPath)
+      .filter(f => path.extname(f) === "Dockerfile" || path.basename(f) === "Dockerfile");
 
-      if (dockerfilesInRoot.length === 1) {
-        return dockerfilesInRoot[0];
-      }
+    if (dockerfilesInRoot.length === 1) {
+      return dockerfilesInRoot[0];
+    }
 
-      return path.join(directory, "Dockerfile");
-    })();
+    return path.join(directory, "Dockerfile");
+  };
+
+  context.subscriptions.push(vscode.commands.registerCommand('dockerfile-builder.runForWorkspace', async () => {
+    const dockerfile = await getDockerfile();
+
+    if (!dockerfile) {
+      return;
+    }
 
     try {
       await runForPath(dockerfile);
