@@ -1,7 +1,7 @@
 # i wonder if there are shell script minifiers...
 function promptCommand() {
   if [ $? -eq 0 ]; then
-    output=$(fc -ln -1| sed -e 's/^ */DOCKERFILE_BUILDER!RUN!/' -e 's/ *$/!DOCKERFILE_BUILDER/')
+    output=$(fc -ln -1| sed -e 's/^[ \t]*/DOCKERFILE_BUILDER!RUN!/' -e 's/ *$/!DOCKERFILE_BUILDER/')
     # It would be much easier to not use these backspaces and just use a \r. But that breaks some
     # terminals for long lines
     echo $output | grep -o . | awk '{printf("%s\b", $0)}'

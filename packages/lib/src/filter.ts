@@ -11,14 +11,15 @@ export class NullCommandFilter implements CommandFilter {
 }
 
 export class FileCommandFilter implements CommandFilter {
-  public static build(file: string): FileCommandFilter {
-    const contents = fs.readFileSync(file, {encoding: 'utf-8'});
+  public static build(file: string): CommandFilter {
+    return new NullCommandFilter();
+    /*const contents = fs.readFileSync(file, {encoding: 'utf-8'});
     const filters = contents
       .split(/[\r\n]/)
       .filter(f => !!f)
       .map(c => new RegExp(c));
 
-    return new FileCommandFilter(filters);
+    return new FileCommandFilter(filters);*/
   }
 
   private constructor(private readonly filters: RegExp[]) {}

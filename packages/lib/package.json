@@ -1,0 +1,35 @@
+{
+  "name": "dockerfile-builder-lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/index.js",
+  "types": "build/index.js",
+  "scripts": {
+    "start": "yarn run build && node build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "build": "tsc && yarn run cp-resources",
+    "fix": "gts fix",
+    "prepare": "yarn run build",
+    "pretest": "yarn run build",
+    "posttest": "yarn run lint",
+    "cp-resources": "cp -R ./src/resources ./build/",
+    "publish": "yarn run build && docker build . -t jonrad/dockerfile-builder:v1"
+  },
+  "files": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^14.11.2",
+    "@types/text-encoding": "0.0.35",
+    "@types/uuid": "^8.3.0",
+    "gts": "^3.0.3",
+    "tslint": "^5.20.1",
+    "typescript": "^4.1.2"
+  },
+  "dependencies": {
+    "text-encoding": "^0.7.0",
+    "uuid": "^8.3.1"
+  }
+}
