@@ -34,7 +34,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     // abstract terminal
     writeOutput(text: string): void {
-      console.log(`Got ${text}`);
       this.writeEmitter.fire(text);
     }
 
