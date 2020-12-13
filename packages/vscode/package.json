@@ -15,6 +15,18 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": [
+      {
+        "title": "Dockerfile Builder",
+        "properties": {
+          "dockerfile-builder.docker": {
+            "type": "string",
+            "default": "",
+            "description": "Path to docker binary"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "dockerfile-builder.runForWorkspace",

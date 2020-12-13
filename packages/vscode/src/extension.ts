@@ -90,6 +90,7 @@ export function activate(context: vscode.ExtensionContext) {
     const args = {
       cwd: rootDirectory,
       '_': [] as string[],
+      'docker': vscode.workspace.getConfiguration("dockerfile-builder").get<string>("docker"),
       dockerfile: undefined as string | undefined
     };
 
