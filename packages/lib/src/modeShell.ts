@@ -4,7 +4,7 @@ import {DockerfileWriter} from './dockerfileWriter';
 import {CommandFilter} from './filter';
 import {LineProcessor, ShellModeCommandProcessor} from './lineProcessor';
 import {CommandRunner} from './commandRunner';
-import {exit} from 'process';
+import {exit} from './exit';
 import { ITerminal } from "./terminal";
 import * as pty from './node-pty';
 
@@ -29,7 +29,7 @@ export class ModeShell {
         this.lineProcessor.process(d);
         terminal.writeOutput(d);
       },
-      () => terminal.exit()
+      () => exit(terminal)
     );
   }
 

@@ -1,0 +1,100 @@
+Arguments: 
+  /usr/local/Cellar/node/15.3.0/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js add @types/dockerfile-builder-lib
+
+PATH: 
+  /Users/jonradchenko/.local/bin:/Users/jonradchenko/.krew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/domino:/usr/local/go/bin:/Users/jonradchenko/scripts
+
+Yarn version: 
+  1.22.10
+
+Node version: 
+  15.3.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/@types%2fdockerfile-builder-lib: Not found
+      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:66988:18)
+      at Request.self.callback (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:140749:22)
+      at Request.emit (node:events:376:20)
+      at Request.<anonymous> (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:141721:10)
+      at Request.emit (node:events:376:20)
+      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:141643:12)
+      at Object.onceWrapper (node:events:482:28)
+      at IncomingMessage.emit (node:events:388:22)
+      at endReadableNT (node:internal/streams/readable:1294:12)
+      at processTicksAndRejections (node:internal/process/task_queues:80:21)
+
+npm manifest: 
+  {
+    "name": "dockerfile-builder-vscode",
+    "displayName": "dockerfile-builder",
+    "description": "",
+    "version": "0.0.1",
+    "engines": {
+      "vscode": "^1.47.0"
+    },
+    "categories": [
+      "Other"
+    ],
+    "activationEvents": [
+      "onCommand:dockerfile-builder.runForWorkspace",
+      "onCommand:dockerfile-builder.runForFile"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+      "commands": [
+        {
+          "command": "dockerfile-builder.runForWorkspace",
+          "title": "Dockerfile Builder"
+        },
+        {
+          "command": "dockerfile-builder.runForFile",
+          "title": "Dockerfile Builder"
+        }
+      ],
+      "menus": {
+        "commandPalette": [
+          {
+            "command": "dockerfile-builder.runForFile",
+            "when": "false"
+          }
+        ],
+        "explorer/context": [
+          {
+            "command": "dockerfile-builder.runForFile",
+            "when": "resourceFilename == Dockerfile || resourceFilename =~ /\\.Dockerfile$/"
+          }
+        ]
+      }
+    },
+    "scripts": {
+      "vscode:prepublish": "yarn run build",
+      "build": "tsc -p ./",
+      "lint": "eslint src --ext ts",
+      "watch": "tsc -watch -p ./",
+      "pretest": "yarn run build && yarn run lint",
+      "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+      "@types/vscode": "^1.51.0",
+      "@types/glob": "^7.1.1",
+      "@types/mocha": "^7.0.2",
+      "@types/node": "^13.11.0",
+      "eslint": "^6.8.0",
+      "@typescript-eslint/parser": "^2.30.0",
+      "@typescript-eslint/eslint-plugin": "^2.30.0",
+      "glob": "^7.1.6",
+      "mocha": "^7.1.2",
+      "typescript": "^3.8.3",
+      "vscode-test": "^1.3.0",
+      "dockerfile-builder-lib": "^1.0.0"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile

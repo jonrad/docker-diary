@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { runDockerfileBuilder } from 'dockerfile-builder-lib/build/app';
 import { Pseudoterminal } from 'vscode';
 import { AbstractTerminal } from 'dockerfile-builder-lib/build/terminal';
+import { dockerfileEmpty } from 'dockerfile-builder-lib/build/dockerfileEmpty';
 import * as pty from 'dockerfile-builder-lib/build/node-pty';
 
 function getCoreNodeModule(moduleName: string): any {
@@ -33,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // abstract terminal
     writeOutput(text: string): void {
+      console.log(`Got ${text}`);
       this.writeEmitter.fire(text);
     }
 
@@ -85,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   const runForPath = async (dockerfile: string) => {
 
-    const dockerfileExists = fs.existsSync(dockerfile);
+    const dockerfileExists = !(await dockerfileEmpty(dockerfile));
     const rootDirectory = path.dirname(dockerfile);
 
     const dockerfileBuilderPty = new DockerfileBuilderPty();
@@ -127,7 +129,7 @@ export function activate(context: vscode.ExtensionContext) {
   // otherwise, if there exists exactly on dockerfile in the directory, use that
   // otherwise, just use "Dockerfile"
   const getDockerfile = async () => {
-    if (vscode.window.activeTextEditor.document.fileName?.match(/Dockerfile$/)) {
+    if (vscode.window.activeTextEditor?.document?.fileName?.match(/Dockerfile$/)) {
       return vscode.window.activeTextEditor.document.fileName;
     }
 
@@ -156,9 +158,17 @@ export function activate(context: vscode.ExtensionContext) {
       return;
     }
 
+    if (!fs.existsSync(dockerfile)) {
+      // Need to create the file so vs code can open it
+      fs.writeFileSync(dockerfile, "");
+    }
+
+    await vscode.window.showTextDocument(vscode.Uri.file(dockerfile));
+
     try {
       await runForPath(dockerfile);
     } catch(e) {
+      vscode.window.showErrorMessage(`Dockerfile Builder failed miserably: \n${e}`);
       console.log(e);
     }
   }));

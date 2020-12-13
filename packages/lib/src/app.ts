@@ -1,11 +1,11 @@
-import fs = require('fs');
-import {exit} from 'process';
 import uuid = require('uuid');
 import {AppendingDockerfileWriter, NullDockerfileWriter, DockerfileWriter} from './dockerfileWriter';
 import {FileCommandFilter, NullCommandFilter, CommandFilter} from './filter';
 import {ModeShell} from './modeShell';
 import { ITerminal } from './terminal';
 import * as pty from './node-pty';
+import { exit } from './exit';
+import { dockerfileEmpty } from './dockerfileEmpty';
 
 export interface RunArgs {
   _?: string[];
@@ -37,32 +37,31 @@ export async function runDockerfileBuilder(
 
   const mode = argv.mode || 'shell';
 
-  function debug(text: string) {
-    fs.appendFileSync('debug.txt', text);
-  }
-
   const filter: CommandFilter = argv.filter
     ? FileCommandFilter.build(argv.filter as string)
     : new NullCommandFilter();
 
   let [image] = argv._ || [];
 
-  if (image && fs.existsSync(dockerfile)) {
-    //TODO this should throw
-    process.stderr.write(
+  const isDockerfileEmpty = await dockerfileEmpty(dockerfile);
+  if (image && !isDockerfileEmpty) {
+    //TODO this should work...
+    terminal.writeOutput(
       'Specified an image but dockerfile already exists. This will overwrite your dockerfile. Use force\n'
     );
 
-    exit(1);
+    exit(terminal, 1);
+    return;
   }
 
-  if (!image && !fs.existsSync(dockerfile)) {
+  if (!image && isDockerfileEmpty) {
     //TODO this should throw
-    process.stderr.write(
-      'Please specify a base image or an existing dockerfile\n'
+    terminal.writeOutput(
+      'Please specify a base image or an existing dockerfile containing a base image\n'
     );
 
-    exit(1);
+    exit(terminal, 1);
+    return;
   }
 
   if (!image) {
@@ -98,8 +97,9 @@ export async function runDockerfileBuilder(
   }
 
   if (!image) {
-    process.stderr.write('Must specify an image or a Dockerfile that exists');
-    exit(1);
+    terminal.writeOutput('Must specify an image or a Dockerfile that exists\r\n');
+    exit(terminal, 1);
+    return;
   }
 
   if (mode === 'shell') {
