@@ -14,8 +14,6 @@ export interface ITerminal {
   unsubscribeUserResized(handler: (cols: number, rows: number) => void): void;
 
   writeOutput(text: string): void;
-
-  exit(): void;
 }
 
 export abstract class AbstractTerminal extends EventEmitter implements ITerminal {
@@ -32,8 +30,6 @@ export abstract class AbstractTerminal extends EventEmitter implements ITerminal
   }
 
   abstract writeOutput(text: string): void;
-
-  abstract exit(): void;
 
   subscribeReceivedUserInput(handler: (input: string) => void) {
     this.on('input', handler);
@@ -62,6 +58,4 @@ export class NullTerminal extends AbstractTerminal {
   }
 
   writeOutput(_text: string): void { }
-
-  exit(): void { }
 }

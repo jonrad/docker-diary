@@ -1,7 +1,6 @@
 import fs = require('fs');
 
 export async function dockerfileEmpty(file: string): Promise<boolean> {
-  console.log(file);
   if (!(fs.existsSync(file))) {
     return true;
   }

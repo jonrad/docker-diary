@@ -10,15 +10,14 @@ class DisposableWrapper {
 }
 
 export class CommandRunner {
-  private current: any | undefined;
+  private current: pty.IPty | undefined;
 
   private buffer: string[] = [];
   private disposables: any[] = [];
 
   constructor(
     private readonly terminal: ITerminal,
-    private readonly onData: (data: string) => Promise<void>,
-    private readonly onExit: () => void
+    private readonly onData: (data: string) => Promise<void>
   ) {
     terminal.subscribeReceivedUserInput((input) => this.handleInput(input));
     terminal.subscribeUserResized((cols, rows) => {
@@ -34,7 +33,12 @@ export class CommandRunner {
     }
   }
 
-  run(pty: pty.NodePty, application: string, args: string[]) {
+  run(pty: pty.NodePty, application: string, args: string[]): Promise<void> {
+    let resolve: undefined | (() => void) = undefined;
+    const promise = new Promise<void>((r: () => void) => {
+      resolve = r;
+    })
+
     this.stop();
 
     this.current = pty.spawn(application, args, {
@@ -43,7 +47,8 @@ export class CommandRunner {
     });
 
     let waiting = false;
-    this.disposables.push(
+    const disposables = [];
+    disposables.push(
       this.current.onData(async (d: string | Uint8Array) => {
         if (waiting) {
           this.buffer.push(d.toString());
@@ -65,10 +70,11 @@ export class CommandRunner {
 
     this.disposables.push(
       this.current.onExit(() => {
-        this.onExit()
+        if (resolve) resolve();
       })
     );
 
+    return promise;
   }
 
   public handleInput(input: string) {

@@ -4,7 +4,6 @@ import {DockerfileWriter} from './dockerfileWriter';
 import {CommandFilter} from './filter';
 import {LineProcessor, ShellModeCommandProcessor} from './lineProcessor';
 import {CommandRunner} from './commandRunner';
-import {exit} from './exit';
 import { ITerminal } from "./terminal";
 import * as pty from './node-pty';
 
@@ -16,6 +15,7 @@ export class ModeShell {
   constructor(
     private readonly pty: pty.NodePty,
     private readonly terminal: ITerminal,
+    private readonly docker: string,
     private readonly dockerfileWriter: DockerfileWriter,
     private readonly filter: CommandFilter,
   ) {
@@ -28,15 +28,14 @@ export class ModeShell {
       async (d: string) => {
         this.lineProcessor.process(d);
         terminal.writeOutput(d);
-      },
-      () => exit(terminal)
+      }
     );
   }
 
-  run(image: string) {
-    this.commandRunner.run(
+  async run(image: string): Promise<void> {
+    await this.commandRunner.run(
       this.pty,
-      'docker',
+      this.docker,
       [
         'run',
         '-it',

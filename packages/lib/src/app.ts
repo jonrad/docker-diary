@@ -4,13 +4,21 @@ import {FileCommandFilter, NullCommandFilter, CommandFilter} from './filter';
 import {ModeShell} from './modeShell';
 import { ITerminal } from './terminal';
 import * as pty from './node-pty';
-import { exit } from './exit';
 import { dockerfileEmpty } from './dockerfileEmpty';
+import * as which from 'which';
+
+export class RunFailure {
+  constructor(
+    readonly reason: string
+  ) {}
+}
 
 export interface RunArgs {
   _?: string[];
 
   cwd?: string;
+
+  docker?: string
 
   dockerfile?: string
 
@@ -25,9 +33,19 @@ export async function runDockerfileBuilder(
   pty: pty.NodePty,
   terminal: ITerminal,
   argv: RunArgs
-) {
+): Promise<void | RunFailure> {
   if (argv.cwd) {
     process.chdir(argv.cwd);
+  }
+
+  const runFailure = (error: string) => {
+    return new RunFailure(error);
+  }
+  //docker binary
+  const docker = argv.docker || which.sync('docker', {nothrow: true});
+
+  if (!docker) {
+    return runFailure("Cannot find docker");
   }
 
   const dockerfile = argv.dockerfile || 'Dockerfile';
@@ -46,35 +64,29 @@ export async function runDockerfileBuilder(
   const isDockerfileEmpty = await dockerfileEmpty(dockerfile);
   if (image && !isDockerfileEmpty) {
     //TODO this should work...
-    terminal.writeOutput(
+    return runFailure(
       'Specified an image but dockerfile already exists. This will overwrite your dockerfile. Use force\n'
     );
-
-    exit(terminal, 1);
-    return;
   }
 
   if (!image && isDockerfileEmpty) {
     //TODO this should throw
-    terminal.writeOutput(
+    return runFailure(
       'Please specify a base image or an existing dockerfile containing a base image\n'
     );
-
-    exit(terminal, 1);
-    return;
   }
 
   if (!image) {
     const id = uuid.v4();
     image = `docker-builder:${id}`;
-    console.log('Building from current Dockerfile\n');
+    terminal.writeOutput('Building from current Dockerfile\n');
 
-    let onFinish: (value: unknown) => void;
+    let onFinish: (value: number) => void;
     const promise = new Promise((resolve) => {
       onFinish = resolve;
     })
 
-    const spawned = pty.spawn('docker', [
+    const spawned = pty.spawn(docker, [
       'build',
       '-t',
       image,
@@ -90,26 +102,28 @@ export async function runDockerfileBuilder(
       terminal.writeOutput(data.toString());
     })
 
-    spawned.onExit(() => onFinish(undefined))
-    await promise;
+    spawned.onExit((e) => onFinish(e.exitCode))
+    const exitCode = await promise;
+    if (exitCode) {
+      return runFailure(`Failed to build docker image. Got exit code: ${exitCode}`);
+    }
   } else {
     dockerfileWriter.write(`FROM ${image}\n`);
   }
 
   if (!image) {
-    terminal.writeOutput('Must specify an image or a Dockerfile that exists\r\n');
-    exit(terminal, 1);
-    return;
+    return runFailure('Must specify an image or a Dockerfile that exists');
   }
 
   if (mode === 'shell') {
     const app = new ModeShell(
       pty,
       terminal,
+      docker,
       dockerfileWriter,
       filter
     );
-    app.run(image);
+    await app.run(image);
   } else if (mode === 'docker') {
     //const app = new ModeDocker(dockerfileWriter, filter);
     //app.run(image);

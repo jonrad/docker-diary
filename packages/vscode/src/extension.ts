@@ -37,10 +37,6 @@ export function activate(context: vscode.ExtensionContext) {
       this.writeEmitter.fire(text);
     }
 
-    exit(): void {
-      this.exitEmitter.fire();
-    }
-
     getColumns(): number {
       return this.dimensions?.columns || 0;
     }
@@ -109,19 +105,27 @@ export function activate(context: vscode.ExtensionContext) {
       args['dockerfile'] = dockerfile;
     }
 
-    const terminal = vscode.window.createTerminal({
+    const vscodeTerminal = vscode.window.createTerminal({
       name: "dockerfile-builder",
       pty: dockerfileBuilderPty
     });
 
-    terminal.show();
+    vscodeTerminal.show();
 
     try {
-      runDockerfileBuilder(nodePty, dockerfileBuilderPty, args);
+      const result = await runDockerfileBuilder(nodePty, dockerfileBuilderPty, args);
+      if (result && result.reason) {
+        vscode.window.showErrorMessage(
+          `Dockerfile builder failed: ${result.reason}`
+        );
+      }
     } catch (e) {
-      console.error(e);
+      vscode.window.showErrorMessage(
+        `Dockerfile builder failed unexpectedly: ${e}`
+      );
+    } finally {
+      dockerfileBuilderPty.exitEmitter.fire();
     }
-
   };
 
   // If in an active dockerfile, use that
@@ -164,17 +168,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     await vscode.window.showTextDocument(vscode.Uri.file(dockerfile));
 
-    try {
-      await runForPath(dockerfile);
-    } catch(e) {
-      vscode.window.showErrorMessage(`Dockerfile Builder failed miserably: \n${e}`);
-      console.log(e);
-    }
+    await runForPath(dockerfile);
   }));
 
   context.subscriptions.push(vscode.commands.registerCommand('dockerfile-builder.runForFile', async (uri: vscode.Uri) => {
     await vscode.window.showTextDocument(uri);
-    runForPath(uri.fsPath);
+    await runForPath(uri.fsPath);
   }));
 }
 
