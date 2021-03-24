@@ -30,49 +30,54 @@ class ConsoleTerminal extends AbstractTerminal {
 }
 
 const yargs = require('yargs/yargs')(process.argv.slice(2))
-  .usage('Usage: $0 [options] [image]')
+  .usage('Usage: $0 [options] -- [extra docker args]')
   //help
   .help('help')
   .alias('help', 'h')
   //filter file
-  .alias('f', 'filter')
-  .nargs('f', 1)
-  .describe('f', 'Filter file')
+  .option('filter', {
+    nargs: 1,
+    desc: 'Filter file (future version)',
+    alias: 'f'
+  })
   //docker path
-  .nargs('docker', 1)
-  .describe('docker', 'Path of docker binary')
+  .option('image', {
+    nargs: 1,
+    desc: 'Base image, required if the dockerfile doesn\'t exist',
+  })
+  //docker path
+  .option('docker', {
+    nargs: 1,
+    desc: 'Path of docker binary',
+  })
   //docker file
-  .nargs('dockerfile', 1)
-  .describe('dockerfile', 'Dockerfile location, defaults to ./Dockerfile')
-  //mode
-  /*.alias('m', 'mode')
-  .describe('mode', '[shell|docker|stdio] - note only shell currently works')
-  .choices('mode', ['shell', 'docker', 'stdio', 'testing'])*/
+  .option('dockerfile', {
+    nargs: 1,
+    desc: 'Dockerfile location, defaults to ./Dockerfile',
+  })
   //cwd
-  .nargs('cwd', 1)
-  .alias('cwd', 'c')
-  .describe('cwd', 'Current Working Directry')
+  .option('cwd', {
+    nargs: 1,
+    type: 'boolean',
+    desc: 'Current Working Directry',
+    alias: ['c'],
+  })
   //dry run
-  .alias('dry', 'd')
-  .describe("dry run. Do not save to dockerfile")
-  .boolean('dry')
-  //the year of the devil
+  .option('dry', {
+    type: 'boolean',
+    desc: 'dry run. Do not save to dockerfile',
+    alias: ['d'],
+  })
   .epilog('https://github.com/jonrad/dockerfile-builder');
 
 const argv = yargs.argv;
-
-// Need at most one arg, the image name
-if ((argv._?.length || 0) > 1) {
-  // todo fix this
-  yargs.showHelp();
-  exit();
-}
 
 async function start() {
   const previousRawMode = process.stdin.isRaw;
   process.stdin.setRawMode(true);
 
   const terminal = new ConsoleTerminal();
+  argv.dockerArgs = argv._ || [];
 
   try {
     const result = await runDockerfileBuilder(
