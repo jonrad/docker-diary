@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import path = require('path');
 import * as fs from 'fs';
-import { runDockerfileBuilder } from 'dockerfile-builder-lib/build/app';
+import { runDockerfileBuilder } from 'dockerfile-builder-lib';
 import { Pseudoterminal } from 'vscode';
-import { AbstractTerminal } from 'dockerfile-builder-lib/build/terminal';
-import { dockerfileEmpty } from 'dockerfile-builder-lib/build/dockerfileEmpty';
+import { AbstractTerminal } from 'dockerfile-builder-lib';
+import { dockerfileEmpty } from 'dockerfile-builder-lib';
 import * as pty from 'dockerfile-builder-lib/build/node-pty';
 
 function getCoreNodeModule(moduleName: string): any {

@@ -1,0 +1,9 @@
+Dockerfile
+**/*.txt
+**/*.js
+**/node_modules
+**/build
+**/tmp/
+**/out/*
+**/tsconfig.tsbuildinfo
+**/*.vsix

@@ -1,5 +1,5 @@
-import { runDockerfileBuilder, RunArgs } from 'dockerfile-builder-lib/build/app';
-import { AbstractTerminal } from 'dockerfile-builder-lib/build/terminal';
+import { runDockerfileBuilder, RunArgs } from 'dockerfile-builder-lib';
+import { AbstractTerminal } from 'dockerfile-builder-lib';
 import { exit } from 'process';
 import * as pty from 'node-pty';
 import { error } from 'console';
