@@ -2,7 +2,7 @@
 
 Keep track of the commands run in a container by saving them as a valid Dockerfile
 
-![Demo](https://github.com/jonrad/docker-diary/tree/master/packages/vscode/demo/demo.gif)
+![Demo](https://github.com/jonrad/docker-diary/blob/master/packages/vscode/media/demo.gif?raw=true)
 
 ## Warning
 
