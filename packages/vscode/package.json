@@ -56,7 +56,7 @@
   },
   "scripts": {
     "vscode:prepublish": "yarn run build",
-    "build": "tsc -p ./ --importHelpers",
+    "build": "tsc -p ./",
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run build && yarn run lint",
