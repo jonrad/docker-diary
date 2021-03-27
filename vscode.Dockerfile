@@ -30,4 +30,3 @@ RUN npm install --save-dev vsce
 # hack to get npm to work, replace the lib with a tarball
 RUN npm install --save ../lib/docker-diary-lib-1.0.0.tgz
 RUN npm run build
-ENTRYPOINT ["npm", "run", "package"]

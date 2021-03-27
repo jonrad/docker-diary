@@ -18,6 +18,9 @@
     "build-image": "docker build . -f console.Dockerfile -t jonrad/docker-diary:latest",
     "watch-vscode": "yarn workspace docker-diary-vscode run watch",
     "watch-lib": "yarn workspace docker-diary-lib run watch",
-    "package-vscode": "docker build . -f vscode.Dockerfile -t jonrad/docker-diary-vscode-builder:tmp && docker run --rm -v $PWD:/output jonrad/docker-diary-vscode-builder:tmp -- -o /output && docker image rm jonrad/docker-diary-vscode-builder:tmp"
+    "build-vscode-packager": "docker build . -f vscode.Dockerfile -t jonrad/docker-diary-vscode-packager:tmp",
+    "delete-vscode-packager": "docker image rm jonrad/docker-diary-vscode-packager:tmp",
+    "package-vscode": "yarn run build-vscode-packager && docker run --rm -v $PWD:/output jonrad/docker-diary-vscode-packager:tmp npm -- run package -o /output && yarn run delete-vscode-packager",
+    "publish-vscode": "yarn run build-vscode-packager && docker run --rm -it -v $PWD:/output jonrad/docker-diary-vscode-packager:tmp npm -- run publish && yarn run delete-vscode-packager"
   }
 }
