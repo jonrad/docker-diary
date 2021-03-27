@@ -14,13 +14,15 @@ export class RunFailure {
 }
 
 export interface RunArgs {
-  _?: string[];
+  image?: string;
 
   cwd?: string;
 
   docker?: string
 
   dockerfile?: string
+
+  dockerArgs?: string[]
 
   dry?: boolean
 
@@ -29,37 +31,37 @@ export interface RunArgs {
   filter?: string
 }
 
-export async function runDockerfileBuilder(
+export async function runDockerDiary(
   pty: pty.NodePty,
   terminal: ITerminal,
-  argv: RunArgs
+  args: RunArgs
 ): Promise<void | RunFailure> {
-  if (argv.cwd) {
-    process.chdir(argv.cwd);
+  if (args.cwd) {
+    process.chdir(args.cwd);
   }
 
   const runFailure = (error: string) => {
     return new RunFailure(error);
   }
   //docker binary
-  const docker = argv.docker || which.sync('docker', {nothrow: true});
+  const docker = args.docker || which.sync('docker', {nothrow: true});
 
   if (!docker) {
     return runFailure("Cannot find docker");
   }
 
-  const dockerfile = argv.dockerfile || 'Dockerfile';
-  const dockerfileWriter: DockerfileWriter = argv.dry
+  const dockerfile = args.dockerfile || 'Dockerfile';
+  const dockerfileWriter: DockerfileWriter = args.dry
     ? new NullDockerfileWriter()
     : new AppendingDockerfileWriter(dockerfile);
 
-  const mode = argv.mode || 'shell';
+  const mode = args.mode || 'shell';
 
-  const filter: CommandFilter = argv.filter
-    ? FileCommandFilter.build(argv.filter as string)
+  const filter: CommandFilter = args.filter
+    ? FileCommandFilter.build(args.filter as string)
     : new NullCommandFilter();
 
-  let [image] = argv._ || [];
+  let image = args.image;
 
   const isDockerfileEmpty = await dockerfileEmpty(dockerfile);
   if (image && !isDockerfileEmpty) {
@@ -78,7 +80,7 @@ export async function runDockerfileBuilder(
 
   if (!image) {
     const id = uuid.v4();
-    image = `docker-builder:${id}`;
+    image = `docker-diary:${id}`;
     terminal.writeOutput('Building from current Dockerfile\n');
 
     let onFinish: (value: number) => void;
@@ -120,6 +122,7 @@ export async function runDockerfileBuilder(
       pty,
       terminal,
       docker,
+      args.dockerArgs || [],
       dockerfileWriter,
       filter
     );

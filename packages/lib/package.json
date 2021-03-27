@@ -1,5 +1,5 @@
 {
-  "name": "dockerfile-builder-lib",
+  "name": "docker-diary-lib",
   "version": "1.0.0",
   "description": "",
   "main": "build/index.js",
@@ -15,10 +15,12 @@
     "pretest": "yarn run build",
     "posttest": "yarn run lint",
     "cp-resources": "cp -R ./src/resources ./build/",
-    "publish": "yarn run build && docker build . -t jonrad/dockerfile-builder:v1",
+    "publish": "yarn run build && docker build . -t jonrad/docker-diary:v1",
     "watch": "tsc -watch -p ./"
   },
-  "files": [],
+  "files": [
+    "build/"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -27,7 +29,7 @@
     "@types/which": "^1.3.2",
     "gts": "^3.0.3",
     "tslint": "^5.20.1",
-    "typescript": "^4.1.2"
+    "typescript": "^4.1.3"
   },
   "dependencies": {
     "@types/which": "^1.3.2",

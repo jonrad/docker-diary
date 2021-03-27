@@ -1,3 +1,13 @@
 {
-  "extends": "./node_modules/gts/tsconfig-google.json"
+  "references": [
+    {
+      "path": "./packages/lib"
+    },
+    {
+      "path": "./packages/console"
+    },
+    {
+      "path": "./packages/vscode"
+    }
+  ]
 }

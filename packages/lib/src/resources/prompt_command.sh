@@ -1,20 +1,20 @@
 # i wonder if there are shell script minifiers...
 function promptCommand() {
   if [ $? -eq 0 ]; then
-    output=$(fc -ln -1| sed -e 's/^[ \t]*/DOCKERFILE_BUILDER!RUN!/' -e 's/ *$/!DOCKERFILE_BUILDER/')
+    output=$(fc -ln -1| sed -e 's/^[ \t]*/DOCKER_DIARY!RUN!/' -e 's/ *$/!DOCKER_DIARY/')
     # It would be much easier to not use these backspaces and just use a \r. But that breaks some
     # terminals for long lines
     echo $output | grep -o . | awk '{printf("%s\b", $0)}'
   fi
 
-  DOCKER_BUILDER_PWD=$(pwd)
-  if [ "$DOCKER_BUILDER_PWD" != "$DOCKER_BUILDER_PREVPWD" ]; then
-    if [ -n "$DOCKER_BUILDER_PREVPWD" ]; then
-      output="DOCKERFILE_BUILDER!WORKDIR!${DOCKER_BUILDER_PWD}!DOCKERFILE_BUILDER"
+  DOCKER_DIARY_PWD=$(pwd)
+  if [ "$DOCKER_DIARY_PWD" != "$DOCKER_DIARY_PREVPWD" ]; then
+    if [ -n "$DOCKER_DIARY_PREVPWD" ]; then
+      output="DOCKER_DIARY!WORKDIR!${DOCKER_DIARY_PWD}!DOCKER_DIARY"
       echo $output | grep -o . | awk '{printf("%s\b", $0)}'
     fi
 
-    export DOCKER_BUILDER_PREVPWD=$DOCKER_BUILDER_PWD
+    export DOCKER_DIARY_PREVPWD=$DOCKER_DIARY_PWD
   fi
 }
 

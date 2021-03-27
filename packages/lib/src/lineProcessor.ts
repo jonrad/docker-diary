@@ -3,7 +3,7 @@ import {CommandFilter} from './filter';
 import {DockerfileWriter} from './dockerfileWriter';
 
 export class LineProcessor {
-  private readonly text = 'DOCKERFILE_BUILDER'
+  private readonly text = 'DOCKER_DIARY'
     .split('')
     .map(s => s + '\b')
     .join('');

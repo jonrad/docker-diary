@@ -16,6 +16,7 @@ export class ModeShell {
     private readonly pty: pty.NodePty,
     private readonly terminal: ITerminal,
     private readonly docker: string,
+    private readonly dockerArgs: string[],
     private readonly dockerfileWriter: DockerfileWriter,
     private readonly filter: CommandFilter,
   ) {
@@ -33,21 +34,24 @@ export class ModeShell {
   }
 
   async run(image: string): Promise<void> {
+    const args = [
+      'run',
+      '-it',
+      '--rm',
+      '--entrypoint',
+      'bash',
+      ...this.dockerArgs,
+      image,
+      '-c',
+      fs.readFileSync(resources.promptCommand).toString() +
+      '\n' +
+      'PROMPT_COMMAND="promptCommand" bash',
+    ];
+
     await this.commandRunner.run(
       this.pty,
       this.docker,
-      [
-        'run',
-        '-it',
-        '--rm',
-        '--entrypoint',
-        'bash',
-        image,
-        '-c',
-        fs.readFileSync(resources.promptCommand).toString() +
-        '\n' +
-        'PROMPT_COMMAND="promptCommand" bash',
-      ]
+      args
     );
   }
 }

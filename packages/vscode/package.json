@@ -1,7 +1,9 @@
 {
-  "name": "dockerfile-builder-vscode",
-  "displayName": "dockerfile-builder",
+  "name": "docker-diary-vscode",
+  "displayName": "docker-diary",
+  "publisher": "jonrad",
   "description": "",
+  "repository": "https://github.com/jonrad/docker-diary",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.47.0"
@@ -10,16 +12,16 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:dockerfile-builder.runForWorkspace",
-    "onCommand:dockerfile-builder.runForFile"
+    "onCommand:docker-diary.runForWorkspace",
+    "onCommand:docker-diary.runForFile"
   ],
-  "main": "./out/extension.js",
+  "main": "./build/extension.js",
   "contributes": {
     "configuration": [
       {
-        "title": "Dockerfile Builder",
+        "title": "Docker Diary",
         "properties": {
-          "dockerfile-builder.docker": {
+          "docker-diary.docker": {
             "type": "string",
             "default": "",
             "description": "Path to docker binary"
@@ -29,24 +31,24 @@
     ],
     "commands": [
       {
-        "command": "dockerfile-builder.runForWorkspace",
-        "title": "Dockerfile Builder"
+        "command": "docker-diary.runForWorkspace",
+        "title": "Docker Diary"
       },
       {
-        "command": "dockerfile-builder.runForFile",
-        "title": "Dockerfile Builder"
+        "command": "docker-diary.runForFile",
+        "title": "Docker Diary"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "dockerfile-builder.runForFile",
+          "command": "docker-diary.runForFile",
           "when": "false"
         }
       ],
       "explorer/context": [
         {
-          "command": "dockerfile-builder.runForFile",
+          "command": "docker-diary.runForFile",
           "when": "resourceFilename == Dockerfile || resourceFilename =~ /\\.Dockerfile$/"
         }
       ]
@@ -58,22 +60,24 @@
     "lint": "eslint src --ext ts",
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run build && yarn run lint",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./build/test/runTest.js",
+    "package": "vsce package"
   },
   "devDependencies": {
-    "@types/vscode": "^1.51.0",
     "@types/glob": "^7.1.1",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.11.0",
-    "eslint": "^6.8.0",
-    "@typescript-eslint/parser": "^2.30.0",
+    "@types/vscode": "^1.47.0",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
+    "@typescript-eslint/parser": "^2.30.0",
+    "eslint": "^6.8.0",
     "glob": "^7.1.6",
     "mocha": "^7.1.2",
-    "typescript": "^3.8.3",
-    "vscode-test": "^1.3.0"
+    "vscode-test": "^1.3.0",
+    "typescript": "^4.1.3"
   },
   "dependencies": {
-    "dockerfile-builder-lib": "^1.0.0"
+    "docker-diary-lib": "1.0.0",
+    "tslib": "^2.1.0"
   }
 }
