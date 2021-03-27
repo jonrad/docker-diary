@@ -10,6 +10,8 @@
 
     "importHelpers": true,
     "composite": true,
-    "target": "es5"
+    "target": "es2019",
+    "module": "commonjs",
+    "lib": [ "es2015", "dom",  "es2017" ]
   }
 }

@@ -7,3 +7,5 @@ Dockerfile
 **/out/*
 **/tsconfig.tsbuildinfo
 **/*.vsix
+**/yarn-error.log
+**/*.tgz
