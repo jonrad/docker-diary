@@ -12,7 +12,7 @@ alias docker-diary="docker run -it --rm -v /var/run/docker.sock:/var/run/docker.
 #### New Project No Dockerfile
 ```
 cd /your/project/directory
-docker-diary ubuntu # Change ubuntu to your favorite base image
+docker-diary --image ubuntu # Change ubuntu to your favorite base image
 ```
 
 #### Existing Dockerfile
@@ -26,10 +26,10 @@ docker-diary
 
 ```
 docker-diary \
-  ubuntu `The base image to use. Required if no Dockerfile exists in the working dir` \
-  --filter filter.txt `Optional file with commands to not store in the Dockerfile, using regex. Eg a file with the contents ^ls would filter out all lines starting with ls commands` \
-  --dockerfile dockerfile `Dockerfile if it's not the standard name. Relative to /opt/working-dir` \
-  --dry `dry run. Won't save changed to Dockerfile`
+  --image ubuntu `The base image to use. Required if no Dockerfile exists in the working dir` \
+  --dockerfile dockerfile `dockerfile if it's not the standard name. relative to /opt/working-dir` \
+  --dry `dry run. Won't save changed to Dockerfile` \
+  -- -v /foo:/bar -p 31337:31337 `any additional args to pass to docker` \
 ```
 
 #### Development
