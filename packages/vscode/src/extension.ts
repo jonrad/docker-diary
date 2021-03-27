@@ -91,17 +91,18 @@ export function activate(context: vscode.ExtensionContext) {
       cwd: rootDirectory,
       '_': [] as string[],
       'docker': vscode.workspace.getConfiguration("docker-diary").get<string>("docker"),
-      dockerfile: undefined as string | undefined
+      dockerfile: undefined as string | undefined,
+      image: undefined as string | undefined
     };
 
     if (!dockerfileExists) {
-      const dockerfile = await getBaseImage();
+      const baseImage = await getBaseImage();
 
-      if (!dockerfile) {
+      if (!baseImage) {
         return;
       }
 
-      args['_'].push(dockerfile);
+      args['image'] = baseImage
     } else {
       args['dockerfile'] = dockerfile;
     }
