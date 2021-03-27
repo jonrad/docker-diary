@@ -62,7 +62,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run build && yarn run lint",
     "test": "node ./build/test/runTest.js",
-    "package": "vsce package"
+    "package": "vsce package --baseImagesUrl https://github.com/jonrad/docker-diary/raw/master/packages/vscode"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
