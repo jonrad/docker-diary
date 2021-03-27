@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { runDockerfileDiary } from 'docker-diary-lib';
+import { runDockerDiary } from 'docker-diary-lib';
 import { Pseudoterminal } from 'vscode';
 import { AbstractTerminal } from 'docker-diary-lib';
 import { dockerfileEmpty } from 'docker-diary-lib';

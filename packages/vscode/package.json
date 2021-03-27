@@ -61,7 +61,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run build && yarn run lint",
     "test": "node ./build/test/runTest.js",
-    "package": "vsce package --yarn"
+    "package": "vsce package"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
@@ -76,7 +76,7 @@
     "vscode-test": "^1.3.0"
   },
   "dependencies": {
-    "docker-diary-lib": "file:../lib/docker-diary-lib-v1.0.0.tgz",
+    "docker-diary-lib": "1.0.0",
     "tslib": "^2.1.0",
     "typescript": "^4.1.3"
   }

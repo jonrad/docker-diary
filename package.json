@@ -17,6 +17,7 @@
     "console": "yarn run build-lib && yarn run build-console && node ./packages/console/build/src/index.js",
     "build-image": "docker build . -f console.Dockerfile -t jonrad/docker-diary:latest",
     "watch-vscode": "yarn workspace docker-diary-vscode run watch",
-    "watch-lib": "yarn workspace docker-diary-lib run watch"
+    "watch-lib": "yarn workspace docker-diary-lib run watch",
+    "package-vscode": "docker build . -f vscode.Dockerfile -t jonrad/docker-diary-vscode-builder:tmp && docker run --rm -v $PWD:/output jonrad/docker-diary-vscode-builder:tmp -- -o /output && docker image rm jonrad/docker-diary-vscode-builder:tmp"
   }
 }
