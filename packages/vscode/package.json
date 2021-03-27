@@ -1,10 +1,11 @@
 {
   "name": "docker-diary-vscode",
-  "displayName": "docker-diary",
+  "displayName": "Docker Diary",
   "publisher": "jonrad",
-  "description": "",
+  "description": "Save commands you run in a container into a valid Dockerfile",
   "repository": "https://github.com/jonrad/docker-diary",
   "version": "0.0.1",
+  "icon": "media/docker-diary.png",
   "engines": {
     "vscode": "^1.47.0"
   },
