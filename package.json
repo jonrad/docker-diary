@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "dockerfile-builder",
+  "name": "docker-diary",
   "workspaces": [
     "packages/lib",
     "packages/console",
@@ -10,13 +10,13 @@
     "typescript": "^4.1.2"
   },
   "scripts": {
-    "build-lib": "yarn workspace dockerfile-builder-lib run build",
-    "build-console": "yarn workspace dockerfile-builder run build",
-    "build-vscode": "yarn workspace dockerfile-builder-vscode run build",
+    "build-lib": "yarn workspace docker-diary-lib run build",
+    "build-console": "yarn workspace docker-diary run build",
+    "build-vscode": "yarn workspace docker-diary-vscode run build",
     "build": "yarn workspaces run build",
     "console": "yarn run build-lib && yarn run build-console && node ./packages/console/build/src/index.js",
-    "build-image": "docker build . -f console.Dockerfile -t jonrad/dockerfile-builder:latest",
-    "watch-vscode": "yarn workspace dockerfile-builder-vscode run watch",
-    "watch-lib": "yarn workspace dockerfile-builder-lib run watch"
+    "build-image": "docker build . -f console.Dockerfile -t jonrad/docker-diary:latest",
+    "watch-vscode": "yarn workspace docker-diary-vscode run watch",
+    "watch-lib": "yarn workspace docker-diary-lib run watch"
   }
 }

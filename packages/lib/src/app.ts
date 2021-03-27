@@ -31,7 +31,7 @@ export interface RunArgs {
   filter?: string
 }
 
-export async function runDockerfileBuilder(
+export async function runDockerDiary(
   pty: pty.NodePty,
   terminal: ITerminal,
   args: RunArgs
@@ -80,7 +80,7 @@ export async function runDockerfileBuilder(
 
   if (!image) {
     const id = uuid.v4();
-    image = `docker-builder:${id}`;
+    image = `docker-diary:${id}`;
     terminal.writeOutput('Building from current Dockerfile\n');
 
     let onFinish: (value: number) => void;

@@ -53,7 +53,7 @@
 //
 //  runBuild(dockerfileContents: string): Promise<string | undefined> {
 //    const id = uuid.v4();
-//    const image = `docker-builder:${id}`;
+//    const image = `docker-diary:${id}`;
 //    const command = spawn('docker', ['build', '-t', image, '-']);
 //
 //    let turnedOn = false;

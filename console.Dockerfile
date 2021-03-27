@@ -12,19 +12,20 @@ RUN apt-get update -y
 RUN apt-get install docker-ce-cli
 
 # Install needed node packages
-WORKDIR "/usr/src/docker-builder"
+WORKDIR "/usr/src/docker-diary"
 
-COPY ./package.json /usr/src/docker-builder/
-COPY ./packages/console/package*.json /usr/src/docker-builder/packages/console/
-COPY ./packages/lib/package*.json /usr/src/docker-builder/packages/lib/
+COPY ./package.json /usr/src/docker-diary/
+COPY ./packages/console/package*.json /usr/src/docker-diary/packages/console/
+COPY ./packages/lib/package*.json /usr/src/docker-diary/packages/lib/
 
 RUN yarn install
 
 # Copy over actual app
-COPY . /usr/src/docker-builder/
-RUN rm -rf packages/vscode
+COPY tsconfig*.json /usr/src/docker-diary/
+COPY packages/lib /usr/src/docker-diary/packages/lib
+COPY packages/console /usr/src/docker-diary/packages/console
 RUN yarn run build
 
 ## Start 'er up
 WORKDIR "/opt/working-dir"
-ENTRYPOINT ["node", "/usr/src/docker-builder/packages/console/build/src/index.js"]
+ENTRYPOINT ["node", "/usr/src/docker-diary/packages/console/build/src/index.js"]

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import { runDockerfileBuilder } from 'dockerfile-builder-lib';
+import { runDockerfileDiary } from 'docker-diary-lib';
 import { Pseudoterminal } from 'vscode';
-import { AbstractTerminal } from 'dockerfile-builder-lib';
-import { dockerfileEmpty } from 'dockerfile-builder-lib';
-import { pty } from 'dockerfile-builder-lib';
+import { AbstractTerminal } from 'docker-diary-lib';
+import { dockerfileEmpty } from 'docker-diary-lib';
+import { pty } from 'docker-diary-lib';
 
 function getCoreNodeModule(moduleName: string): any {
   try {
@@ -22,7 +22,7 @@ function getCoreNodeModule(moduleName: string): any {
 const nodePty = getCoreNodeModule('node-pty') as pty.NodePty;
 
 export function activate(context: vscode.ExtensionContext) {
-  class DockerfileBuilderPty extends AbstractTerminal implements Pseudoterminal {
+  class DockerDiaryPty extends AbstractTerminal implements Pseudoterminal {
     private dimensions?: vscode.TerminalDimensions;
 
     writeEmitter: vscode.EventEmitter<string> = new vscode.EventEmitter<string>();
@@ -85,12 +85,12 @@ export function activate(context: vscode.ExtensionContext) {
     const dockerfileExists = !(await dockerfileEmpty(dockerfile));
     const rootDirectory = path.dirname(dockerfile);
 
-    const dockerfileBuilderPty = new DockerfileBuilderPty();
+    const dockerDiaryPty = new DockerDiaryPty();
 
     const args = {
       cwd: rootDirectory,
       '_': [] as string[],
-      'docker': vscode.workspace.getConfiguration("dockerfile-builder").get<string>("docker"),
+      'docker': vscode.workspace.getConfiguration("docker-diary").get<string>("docker"),
       dockerfile: undefined as string | undefined
     };
 
@@ -107,25 +107,25 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const vscodeTerminal = vscode.window.createTerminal({
-      name: "dockerfile-builder",
-      pty: dockerfileBuilderPty
+      name: "docker-diary",
+      pty: dockerDiaryPty
     });
 
     vscodeTerminal.show();
 
     try {
-      const result = await runDockerfileBuilder(nodePty, dockerfileBuilderPty, args);
+      const result = await runDockerDiary(nodePty, dockerDiaryPty, args);
       if (result && result.reason) {
         vscode.window.showErrorMessage(
-          `Dockerfile builder failed: ${result.reason}`
+          `Docker Diary failed: ${result.reason}`
         );
       }
     } catch (e) {
       vscode.window.showErrorMessage(
-        `Dockerfile builder failed unexpectedly: ${e}`
+        `Docker Diary failed unexpectedly: ${e}`
       );
     } finally {
-      dockerfileBuilderPty.exitEmitter.fire();
+      dockerDiaryPty.exitEmitter.fire();
     }
   };
 
@@ -155,7 +155,7 @@ export function activate(context: vscode.ExtensionContext) {
     return path.join(directory, "Dockerfile");
   };
 
-  context.subscriptions.push(vscode.commands.registerCommand('dockerfile-builder.runForWorkspace', async () => {
+  context.subscriptions.push(vscode.commands.registerCommand('docker-diary.runForWorkspace', async () => {
     const dockerfile = await getDockerfile();
 
     if (!dockerfile) {
@@ -172,7 +172,7 @@ export function activate(context: vscode.ExtensionContext) {
     await runForPath(dockerfile);
   }));
 
-  context.subscriptions.push(vscode.commands.registerCommand('dockerfile-builder.runForFile', async (uri: vscode.Uri) => {
+  context.subscriptions.push(vscode.commands.registerCommand('docker-diary.runForFile', async (uri: vscode.Uri) => {
     await vscode.window.showTextDocument(uri);
     await runForPath(uri.fsPath);
   }));

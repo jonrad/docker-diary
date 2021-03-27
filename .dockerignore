@@ -1,2 +1,10 @@
+**/*.txt
+**/*.js
 **/node_modules
-**/build/
+**/build
+**/tmp/
+**/out/*
+**/tsconfig.tsbuildinfo
+**/*.vsix
+**/yarn-error.log
+**/*.tgz

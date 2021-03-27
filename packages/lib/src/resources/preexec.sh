@@ -2,8 +2,8 @@ function init() {
   shopt -s extdebug
 
   promptCommand () {
-    DOCKER_BUILDER_PWD=$(pwd)
-    output="DOCKERFILE_BUILDER!WORKDIR!${DOCKER_BUILDER_PWD}!DOCKERFILE_BUILDER"
+    DOCKER_DIARY_PWD=$(pwd)
+    output="DOCKER_DIARY!WORKDIR!${DOCKER_DIARY_PWD}!DOCKER_DIARY"
     echo $output | grep -o . | awk '{printf("%s\b", $0)}'
   }
 
@@ -17,7 +17,7 @@ function init() {
         return 0
       else
         # So that you don't get locked accidentally
-        output="DOCKERFILE_BUILDER!RUN!$this_command!DOCKERFILE_BUILDER"
+        output="DOCKER_DIARY!RUN!$this_command!DOCKER_DIARY"
         echo $output | grep -o . | awk '{printf("%s\b", $0)}'
         if [ "shopt -u extdebug" == "$this_command" ]; then
             return 0

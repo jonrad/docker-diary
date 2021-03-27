@@ -1,5 +1,5 @@
-import { runDockerfileBuilder, RunArgs } from 'dockerfile-builder-lib';
-import { AbstractTerminal } from 'dockerfile-builder-lib';
+import { runDockerDiary, RunArgs } from 'docker-diary-lib';
+import { AbstractTerminal } from 'docker-diary-lib';
 import { exit } from 'process';
 import * as pty from 'node-pty';
 import { error } from 'console';
@@ -68,7 +68,7 @@ const yargs = require('yargs/yargs')(process.argv.slice(2))
     desc: 'dry run. Do not save to dockerfile',
     alias: ['d'],
   })
-  .epilog('https://github.com/jonrad/dockerfile-builder');
+  .epilog('https://github.com/jonrad/docker-diary');
 
 const argv = yargs.argv;
 
@@ -80,7 +80,7 @@ async function start() {
   argv.dockerArgs = argv._ || [];
 
   try {
-    const result = await runDockerfileBuilder(
+    const result = await runDockerDiary(
       pty,
       terminal,
       argv as RunArgs

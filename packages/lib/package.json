@@ -1,5 +1,5 @@
 {
-  "name": "dockerfile-builder-lib",
+  "name": "docker-diary-lib",
   "version": "1.0.0",
   "description": "",
   "main": "build/index.js",
@@ -15,7 +15,7 @@
     "pretest": "yarn run build",
     "posttest": "yarn run lint",
     "cp-resources": "cp -R ./src/resources ./build/",
-    "publish": "yarn run build && docker build . -t jonrad/dockerfile-builder:v1",
+    "publish": "yarn run build && docker build . -t jonrad/docker-diary:v1",
     "watch": "tsc -watch -p ./"
   },
   "files": [
